@@ -94,7 +94,7 @@ class _PedidoFormDialogState extends State<PedidoFormDialog> {
     Navigator.of(context).pop(
       PedidoFormResult(
         nombre: nombre,
-        cantidad: cantidad.isEmpty ? '1 unidad' : cantidad,
+        cantidad: cantidad.isEmpty ? cantidad : cantidad,
         direccion: direccion,
         descripcion: descripcion,
         precio: precio!,
@@ -124,7 +124,6 @@ class _PedidoFormDialogState extends State<PedidoFormDialog> {
               controller: _cantidadController,
               decoration: const InputDecoration(
                 labelText: 'Cantidad',
-                hintText: '2 combos, 1 paquete, 3 cajas...',
               ),
             ),
             const SizedBox(height: 12),
@@ -141,7 +140,6 @@ class _PedidoFormDialogState extends State<PedidoFormDialog> {
               controller: _descripcionController,
               decoration: const InputDecoration(
                 labelText: 'Descripción',
-                hintText: 'Instrucciones, referencias o detalles del domicilio',
               ),
               maxLines: 3,
             ),

@@ -59,26 +59,17 @@ class RappiPedidosApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: const Color(0xFFEF6C00),
+      seedColor: const Color(0xFFFFFFFF),
       brightness: Brightness.light,
     );
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Solicitudes de domicilio',
+      title: 'Rappi',
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: colorScheme,
-        scaffoldBackgroundColor: const Color(0xFFFFF8F2),
-        appBarTheme: AppBarTheme(
-          backgroundColor: colorScheme.surface,
-          foregroundColor: colorScheme.onSurface,
-        ),
-        inputDecorationTheme: const InputDecorationTheme(
-          border: OutlineInputBorder(),
-          filled: true,
-          fillColor: Colors.white,
-        ),
+        scaffoldBackgroundColor: const Color(0xFFFFFFFF),
         cardTheme: CardThemeData(
           color: Colors.white,
           elevation: 1,

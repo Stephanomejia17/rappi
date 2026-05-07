@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../models/pedido.dart';
@@ -53,7 +54,7 @@ class _PedidosPageState extends State<PedidosPage> {
       precio: result.precio,
     );
 
-    _showMessage('Pedido guardado correctamente.');
+    _showMessage('Pedido guardado correctamente');
   }
 
   Future<void> _openEditDialog(Pedido pedido) async {
@@ -84,7 +85,7 @@ class _PedidosPageState extends State<PedidosPage> {
       ),
     );
 
-    _showMessage('Pedido actualizado.');
+    _showMessage('Pedido actualizado');
   }
 
   Future<void> _deletePedido(Pedido pedido) async {
@@ -93,7 +94,7 @@ class _PedidosPageState extends State<PedidosPage> {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Eliminar pedido'),
-            content: Text('Se eliminará el pedido "${pedido.nombre}".'),
+            content: Text('Se eliminará el pedido "${pedido.nombre}"'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -113,14 +114,63 @@ class _PedidosPageState extends State<PedidosPage> {
     }
 
     await widget.repository.deletePedido(pedido);
-    _showMessage('Pedido eliminado localmente.');
+    _showMessage('Pedido eliminado localmente');
   }
 
   Future<void> _manualSync() async {
     await widget.repository.syncPendingPedidos();
     await widget.repository.refreshFromRemote();
 
-    _showMessage('Sincronización ejecutada.');
+    _showMessage('Sincronización ejecutada');
+  }
+
+  Future<void> _runQaAction(
+    String successMessage,
+    Future<void> Function() action,
+  ) async {
+    try {
+      await action();
+      _showMessage(successMessage);
+    } catch (_) {
+      _showMessage('La acción QA generó un error revisa los logs');
+    }
+  }
+
+  Widget _buildQaMenu() {
+    if (!kDebugMode) {
+      return const SizedBox.shrink();
+    }
+
+    return PopupMenuButton<String>(
+      tooltip: 'Herramientas QA',
+      icon: const Icon(Icons.bug_report_outlined),
+      onSelected: (value) {
+
+        if (value == 'Cantidad Libre') {
+          _runQaAction(
+            'QA: pedido con cantidad string y descripción larga creado',
+            widget.repository.qaCreatePedidoWithStringCantidad,
+          );
+        }
+
+        if (value == 'Descripcion larga') {
+          _runQaAction(
+            'QA: pedido con cantidad string y descripción larga creado',
+            widget.repository.qaCreatePedidoWithLongDescription,
+          );
+        }
+      },
+      itemBuilder: (context) => const [
+        PopupMenuItem(
+          value: 'Cantidad Libre',
+          child: Text(' Cantidad String'),
+        ),
+        PopupMenuItem(
+          value: 'Descripcion larga',
+          child: Text('Descripcion larga'),
+        ),
+      ],
+    );
   }
 
   void _showMessage(String message) {
@@ -137,8 +187,9 @@ class _PedidosPageState extends State<PedidosPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Solicitudes de domicilio'),
+        title: const Text('Rappi'),
         actions: [
+          _buildQaMenu(),
           IconButton(
             onPressed: _manualSync,
             icon: const Icon(Icons.sync),
@@ -148,7 +199,6 @@ class _PedidosPageState extends State<PedidosPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openCreateDialog,
-        icon: const Icon(Icons.add_home_work_outlined),
         label: const Text('Nuevo pedido'),
       ),
       body: StreamBuilder<List<Pedido>>(
@@ -159,11 +209,6 @@ class _PedidosPageState extends State<PedidosPage> {
           }
 
           final pedidos = snapshot.data ?? const <Pedido>[];
-          final total = pedidos.fold<double>(
-            0,
-            (sum, pedido) => sum + pedido.precio,
-          );
-          final pending = pedidos.where((pedido) => pedido.pendingSync).length;
 
           return RefreshIndicator(
             onRefresh: () async {
@@ -173,12 +218,6 @@ class _PedidosPageState extends State<PedidosPage> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
               children: [
-                _DashboardHeader(
-                  totalPedidos: pedidos.length,
-                  pendientes: pending,
-                  totalValor: total,
-                ),
-                const SizedBox(height: 20),
                 if (pedidos.isEmpty)
                   const _EmptyState()
                 else
@@ -197,102 +236,6 @@ class _PedidosPageState extends State<PedidosPage> {
   }
 }
 
-class _DashboardHeader extends StatelessWidget {
-  final int totalPedidos;
-  final int pendientes;
-  final double totalValor;
-
-  const _DashboardHeader({
-    required this.totalPedidos,
-    required this.pendientes,
-    required this.totalValor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFF8A00), Color(0xFFFFB74D)],
-        ),
-        borderRadius: BorderRadius.circular(28),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Control de domicilios',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Registra, actualiza y sincroniza pedidos incluso cuando la red falla.',
-            style: TextStyle(color: Colors.white, height: 1.4),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: _MetricCard(label: 'Pedidos', value: '$totalPedidos'),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _MetricCard(label: 'Pendientes', value: '$pendientes'),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _MetricCard(
-                  label: 'Total',
-                  value: '\$${totalValor.toStringAsFixed(0)}',
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MetricCard extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _MetricCard({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
@@ -307,11 +250,6 @@ class _EmptyState extends StatelessWidget {
       ),
       child: const Column(
         children: [
-          Icon(
-            Icons.local_shipping_outlined,
-            size: 56,
-            color: Color(0xFFFF8A00),
-          ),
           SizedBox(height: 16),
           Text(
             'Todavía no hay solicitudes',

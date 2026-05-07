@@ -1,6 +1,7 @@
 import '../data/app_database.dart';
 import '../models/pedido.dart';
 import 'app_logger.dart';
+import 'app_logger_simulator.dart';
 import 'pedido_remote_service.dart';
 
 class PedidoRepository {
@@ -42,7 +43,7 @@ class PedidoRepository {
       await localDb.markAsSynced(pedido.id);
     } catch (error, stackTrace) {
       AppLogger.warning(
-        'El pedido quedó guardado localmente y pendiente de sincronización.',
+        'El pedido se guardo localmente y está pendiente de sincronización',
       );
       AppLogger.error(
         'Error sincronizando pedido nuevo',
@@ -62,7 +63,7 @@ class PedidoRepository {
       await localDb.markAsSynced(updatedPedido.id);
     } catch (error, stackTrace) {
       AppLogger.warning(
-        'El cambio quedó localmente y pendiente de sincronización.',
+        'El cambio quedó localmente y pendiente de sincronización',
       );
       AppLogger.error(
         'Error sincronizando actualización de pedido',
@@ -81,7 +82,7 @@ class PedidoRepository {
       await localDb.clearPendingDelete(pedido.id);
     } catch (error, stackTrace) {
       AppLogger.warning(
-        'El pedido se eliminó localmente y la eliminación quedó pendiente de sincronización.',
+        'El pedido se eliminó localmente y la eliminación quedó pendiente de sincronización',
       );
       AppLogger.error(
         'Error sincronizando eliminación de pedido',
@@ -122,7 +123,7 @@ class PedidoRepository {
         await localDb.markAsSynced(pedido.id);
       } catch (error, stackTrace) {
         AppLogger.error(
-          'Error sincronizando pedido pendiente ${pedido.id}',
+          'Error sincronizando pedido pendiente',
           error: error,
           stackTrace: stackTrace,
         );
@@ -135,11 +136,39 @@ class PedidoRepository {
         await localDb.clearPendingDelete(pedidoId);
       } catch (error, stackTrace) {
         AppLogger.error(
-          'Error sincronizando eliminación pendiente $pedidoId',
+          'Error sincronizando eliminación pendiente',
           error: error,
           stackTrace: stackTrace,
         );
       }
     }
+  }
+
+  Future<void> qaCreatePedidoWithStringCantidad() async {
+    AppLogger.info(
+      'QA: creando pedido con cantidad libre y descripción extensa.',
+    );
+
+    await addPedido(
+      nombre: 'QA - Texto libre',
+      cantidad: AppLoggerSimulator.cantidadLibre(),
+      direccion: 'Diagonal 23 # 8-77',
+      descripcion: 'Arroz con pollo',
+      precio: 32000,
+    );
+  }
+
+  Future<void> qaCreatePedidoWithLongDescription() async {
+    AppLogger.info(
+      'Descripción larga.',
+    );
+
+    await addPedido(
+      nombre: 'QA - Texto libre',
+      cantidad: AppLoggerSimulator.cantidadLibre(),
+      direccion: 'Diagonal 23 # 8-77',
+      descripcion: AppLoggerSimulator.descripcionLarga(),
+      precio: 32000,
+    );
   }
 }

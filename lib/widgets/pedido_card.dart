@@ -43,7 +43,6 @@ class PedidoCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.brown.shade700,
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -74,10 +73,6 @@ class PedidoCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
                         vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.amber.shade100,
-                        borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(
                         'Pendiente',
