@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "904703646853",
+    "project_id": "rappi-1973b",
+    "storage_bucket": "rappi-1973b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:904703646853:android:85b8d3b27cd539f21b1dec",
+        "android_client_info": {
+          "package_name": "com.example.pal_cuero"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjkfsAB0_eRrB66dd0tHTHZsp_11yUgLs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:904703646853:android:f91d98834cbaa3b91b1dec",
+        "android_client_info": {
+          "package_name": "com.example.rappi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjkfsAB0_eRrB66dd0tHTHZsp_11yUgLs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
